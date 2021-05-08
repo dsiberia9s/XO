@@ -13,6 +13,20 @@ TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite s = TFT_eSprite(&tft);
 TFT_eSprite transp_sprite = TFT_eSprite(&tft);
 
+void draw(int x, int y, int w, int h, uint16_t* image, TFT_eSprite &sprite) {
+  int padding_left = (sprite.width() - w) / 2;
+  int padding_top = (sprite.height() - h) / 2;
+  
+  sprite.pushImage(-x, -y, 320, 240, (uint16_t*)img_1);
+
+  transp_sprite.setSwapBytes(true);
+  transp_sprite.pushImage(padding_left, padding_top, w, h, image);
+  transp_sprite.setSwapBytes(false);
+  transp_sprite.pushToSprite(&sprite, 0, 0, TFT_BLACK);
+  
+  sprite.pushSprite(x, y);
+}
+
 void M5Stack() {
   Serial.begin(115200);
   Serial.flush();
@@ -44,48 +58,10 @@ void loop() {
   int x = 50;
 
   for (; x < 180; x+=2) {
+    draw(x, 0, 64, 64, (uint16_t*)player_1, s);
+  
     s.pushImage(-x, 0, 320, 240, (uint16_t*)img_1);
-
-    transp_sprite.setSwapBytes(true);
-    transp_sprite.pushImage(10, 10, 64, 64, (uint16_t*)player_1);
-    transp_sprite.setSwapBytes(false);
-    transp_sprite.pushToSprite(&s, 0, 0, TFT_BLACK);
-    
-    //s.drawRect(10, 10, 60, 60, TFT_RED);
-    s.pushSprite(x, 0);
-    delay(40);
+    s.pushSprite(x, 0, TFT_BLACK);
   }
-  s.pushImage(-x, 0, 320, 240, (uint16_t*)img_1);
-  s.pushSprite(x, 0, TFT_BLACK);
   
 }
-
-/*
- * 
- *   for (int x = 0; x < 160; x++) {   
-
-    s.drawRect(0, 0, 60, 60, TFT_RED);
-    //s.pushImage(0, 0, 60, 60, (uint16_t*)player_1);
-    s.pushSprite(x, x, TFT_BLACK);
-    delay(500);
-
-
-    s.pushImage(0, 0, 60, 60, (uint16_t*)img_1);
-    s.pushSprite(x, x, TFT_BLACK);
-    //s.pushImage(-(320 - x), -(240 - x), 60, 60, (uint16_t*)img_1);
-    //s.pushSprite(x, x, TFT_BLACK);
-    delay(500);
-  }
-
-  s.deleteSprite();
-  //s.pushImage(-(320 - i), -10, 320, 240, (uint16_t*)img_1);
-  //s.swapBytes(true);
-  //tft.pushImage(i, i, 60, 60, (uint16_t*)player_1);
-  //s.pushSprite(i, 10, TFT_BLACK);
-
-  m5.Lcd.startWrite();
-  m5.Lcd.setWindow(10, 10, 320, 240);
-  m5.Lcd.writePixels(b, sizeof(b) / sizeof(uint16_t));
-  m5.Lcd.endWrite();
-
- */
